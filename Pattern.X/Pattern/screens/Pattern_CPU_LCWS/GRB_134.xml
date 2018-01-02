@@ -1,0 +1,25 @@
+<golproperties golId="10" golType="GRB">
+<scheme>Table1</scheme>
+<text>RC</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<bottom>263</bottom>
+<right>159</right>
+<top>73</top>
+<left>84</left>
+<name>GRB_229</name>
+</golproperties>

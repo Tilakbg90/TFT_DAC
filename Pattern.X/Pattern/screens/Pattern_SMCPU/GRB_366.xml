@@ -1,0 +1,25 @@
+<golproperties golId="10" golType="GRB">
+<scheme>Table1</scheme>
+<text>Modem Data Packets</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<bottom>166</bottom>
+<right>414</right>
+<top>70</top>
+<left>225</left>
+<name>GRB_366</name>
+</golproperties>

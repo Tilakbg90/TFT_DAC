@@ -1,0 +1,24 @@
+<golproperties golId="3" golType="RDB">
+<scheme>Static_test</scheme>
+<text>A1</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<checked>
+<list>1</list>
+<list>true</list>
+<list>false</list>
+</checked>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<bottom>267</bottom>
+<right>92</right>
+<top>250</top>
+<left>56</left>
+<name>RDB_389</name>
+</golproperties>

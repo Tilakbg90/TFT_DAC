@@ -1,0 +1,12 @@
+<Push_Button>
+<Color0>13159424</Color0>
+<Color1>248</Color1>
+<TextColor0>0</TextColor0>
+<TextColor1>16777215</TextColor1>
+<EmbossDkColor>12488</EmbossDkColor>
+<EmbossLtColor>12488</EmbossLtColor>
+<TextColorDisabled>16252928</TextColorDisabled>
+<ColorDisabled>13689072</ColorDisabled>
+<CommonBkColor>12488</CommonBkColor>
+<pFont memory="Internal">Monospaced_bold_Bold_14_1</pFont>
+</Push_Button>

@@ -1,0 +1,30 @@
+<golproperties golId="8" golType="STE">
+<scheme>Static_test</scheme>
+<text>Speed: 100Km/hr</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<frame>
+<list>1</list>
+<list>disabled</list>
+<list>enabled</list>
+</frame>
+<bottom>138</bottom>
+<right>449</right>
+<top>115</top>
+<left>323</left>
+<name>STE_237</name>
+</golproperties>

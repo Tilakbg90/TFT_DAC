@@ -1,0 +1,30 @@
+<golproperties golId="8" golType="STE">
+<scheme>defscheme</scheme>
+<text>NA:           </text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<frame>
+<list>0</list>
+<list>disabled</list>
+<list>enabled</list>
+</frame>
+<bottom>84</bottom>
+<right>463</right>
+<top>61</top>
+<left>354</left>
+<name>STE_91</name>
+</golproperties>

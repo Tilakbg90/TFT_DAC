@@ -1,0 +1,25 @@
+<golproperties golId="10" golType="GRB">
+<scheme>Table1</scheme>
+<text>FC</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<bottom>188</bottom>
+<right>138</right>
+<top>66</top>
+<left>58</left>
+<name>GRB_186</name>
+</golproperties>

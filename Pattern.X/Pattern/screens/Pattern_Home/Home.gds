@@ -1,0 +1,14 @@
+<golproperties bgcolor="12488">
+<OTE_2>
+<path>screens/Pattern_Home/OTE_2.xml</path>
+</OTE_2>
+<PCB_3>
+<path>screens/Pattern_Home/PCB_3.xml</path>
+</PCB_3>
+<OTE_5>
+<path>screens/Pattern_Home/OTE_5.xml</path>
+</OTE_5>
+<STE_6>
+<path>screens/Pattern_Home/STE_6.xml</path>
+</STE_6>
+</golproperties>

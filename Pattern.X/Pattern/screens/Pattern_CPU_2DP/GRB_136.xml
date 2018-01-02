@@ -1,0 +1,25 @@
+<golproperties golId="10" golType="GRB">
+<scheme>Table1</scheme>
+<text>Reverse Count</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<bottom>165</bottom>
+<right>335</right>
+<top>94</top>
+<left>199</left>
+<name>GRB_167</name>
+</golproperties>

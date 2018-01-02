@@ -1,0 +1,29 @@
+<golproperties golId="9" golType="PCB">
+<scheme>defscheme</scheme>
+<bitmap memory="Internal">logo_small2_db2_inv.bmp</bitmap>
+<scale>
+<list>0</list>
+<list>1</list>
+<list>2</list>
+</scale>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<frame>
+<list>0</list>
+<list>disabled</list>
+<list>enabled</list>
+</frame>
+<bottom>60</bottom>
+<right>73</right>
+<top>16</top>
+<left>10</left>
+<name>PCB_268</name>
+</golproperties>

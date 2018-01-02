@@ -1,0 +1,30 @@
+<golproperties golId="8" golType="STE">
+<scheme>Static_test</scheme>
+<text>Unit B</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<frame>
+<list>1</list>
+<list>disabled</list>
+<list>enabled</list>
+</frame>
+<bottom>90</bottom>
+<right>212</right>
+<top>65</top>
+<left>160</left>
+<name>STE_351</name>
+</golproperties>

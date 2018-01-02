@@ -1,0 +1,26 @@
+<golproperties bgcolor="25848">
+<PCB_69>
+<path>screens/Pattern_Screen_COM/PCB_69.xml</path>
+</PCB_69>
+<STE_72>
+<path>screens/Pattern_Screen_COM/STE_72.xml</path>
+</STE_72>
+<STE_73>
+<path>screens/Pattern_Screen_COM/STE_73.xml</path>
+</STE_73>
+<BTN_74>
+<path>screens/Pattern_Screen_COM/BTN_74.xml</path>
+</BTN_74>
+<BTN_75>
+<path>screens/Pattern_Screen_COM/BTN_75.xml</path>
+</BTN_75>
+<BTN_76>
+<path>screens/Pattern_Screen_COM/BTN_76.xml</path>
+</BTN_76>
+<BTN_77>
+<path>screens/Pattern_Screen_COM/BTN_77.xml</path>
+</BTN_77>
+<BTN_78>
+<path>screens/Pattern_Screen_COM/BTN_78.xml</path>
+</BTN_78>
+</golproperties>

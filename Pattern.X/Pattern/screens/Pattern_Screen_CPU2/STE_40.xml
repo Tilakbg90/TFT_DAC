@@ -1,0 +1,30 @@
+<golproperties golId="8" golType="STE">
+<scheme>defscheme</scheme>
+<text>Code CRC: PASS</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<frame>
+<list>0</list>
+<list>disabled</list>
+<list>enabled</list>
+</frame>
+<bottom>101</bottom>
+<right>401</right>
+<top>78</top>
+<left>292</left>
+<name>STE_92</name>
+</golproperties>

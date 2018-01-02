@@ -1,0 +1,30 @@
+<golproperties golId="8" golType="STE">
+<scheme>defscheme</scheme>
+<text>Code CheckSum = 0x12345678</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<frame>
+<list>0</list>
+<list>disabled</list>
+<list>enabled</list>
+</frame>
+<bottom>260</bottom>
+<right>217</right>
+<top>239</top>
+<left>15</left>
+<name>STE_9</name>
+</golproperties>

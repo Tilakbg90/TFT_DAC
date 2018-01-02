@@ -1,0 +1,30 @@
+<golproperties golId="8" golType="STE">
+<scheme>Static_test</scheme>
+<text> Download complete</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<frame>
+<list>0</list>
+<list>disabled</list>
+<list>enabled</list>
+</frame>
+<bottom>170</bottom>
+<right>462</right>
+<top>146</top>
+<left>305</left>
+<name>STE_88</name>
+</golproperties>

@@ -1,0 +1,24 @@
+<golproperties golId="3" golType="RDB">
+<scheme>Static_test</scheme>
+<text>C</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<checked>
+<list>1</list>
+<list>true</list>
+<list>false</list>
+</checked>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<bottom>253</bottom>
+<right>399</right>
+<top>236</top>
+<left>363</left>
+<name>RDB_612</name>
+</golproperties>

@@ -1,0 +1,29 @@
+<golproperties golId="9" golType="PCB">
+<scheme>defscheme</scheme>
+<bitmap memory="Internal">No_Train.bmp</bitmap>
+<scale>
+<list>0</list>
+<list>1</list>
+<list>2</list>
+</scale>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<frame>
+<list>0</list>
+<list>disabled</list>
+<list>enabled</list>
+</frame>
+<bottom>271</bottom>
+<right>157</right>
+<top>228</top>
+<left>95</left>
+<name>PCB_424</name>
+</golproperties>

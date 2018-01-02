@@ -1,0 +1,29 @@
+<golproperties golId="9" golType="PCB">
+<scheme>Image_disable</scheme>
+<bitmap memory="Internal">logo_small2.bmp</bitmap>
+<scale>
+<list>0</list>
+<list>1</list>
+<list>2</list>
+</scale>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<frame>
+<list>0</list>
+<list>disabled</list>
+<list>enabled</list>
+</frame>
+<bottom>119</bottom>
+<right>257</right>
+<top>76</top>
+<left>197</left>
+<name>PCB_216</name>
+</golproperties>

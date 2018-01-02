@@ -1,0 +1,26 @@
+<golproperties golId="5" golType="LSB">
+<scheme>in_table3</scheme>
+<items>C1=0010
+C2=0010</items>
+<state>
+<list>1</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>0</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<bottom>215</bottom>
+<right>83</right>
+<top>173</top>
+<left>17</left>
+<name>LSB_224</name>
+</golproperties>

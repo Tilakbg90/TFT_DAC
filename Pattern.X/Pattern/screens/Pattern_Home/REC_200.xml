@@ -1,0 +1,24 @@
+<golproperties golId="23" golType="REC">
+<thickness>
+<list>0</list>
+<list>0-1 Pixel</list>
+<list>1-3 Pixel</list>
+</thickness>
+<type>
+<list>0</list>
+<list>Solid Line</list>
+<list>Dotted Line</list>
+<list>Dashed Line</list>
+</type>
+<color>16317688</color>
+<fill>
+<list>0</list>
+<list>false</list>
+<list>true</list>
+</fill>
+<radius>0</radius>
+<bottom>268</bottom>
+<right>476</right>
+<top>3</top>
+<left>3</left>
+</golproperties>

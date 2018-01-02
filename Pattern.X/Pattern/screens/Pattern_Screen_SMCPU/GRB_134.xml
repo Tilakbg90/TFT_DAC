@@ -1,0 +1,25 @@
+<golproperties golId="10" golType="GRB">
+<scheme>Table1</scheme>
+<text>Data Log</text>
+<state>
+<list>0</list>
+<list>enabled</list>
+<list>disabled</list>
+</state>
+<visible>
+<list>0</list>
+<list>true</list>
+<list>false</list>
+</visible>
+<align>
+<list>1</list>
+<list>center</list>
+<list>left</list>
+<list>right</list>
+</align>
+<bottom>177</bottom>
+<right>225</right>
+<top>68</top>
+<left>13</left>
+<name>GRB_134</name>
+</golproperties>
