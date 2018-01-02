@@ -6414,7 +6414,7 @@ int main(void)
         else
         {
             GCPU_ACTIVE = 1;
-            if(sense_key == 1) //
+            if(sense_key == 1) //z
             {
                 Screen_Off = 1;
             }
