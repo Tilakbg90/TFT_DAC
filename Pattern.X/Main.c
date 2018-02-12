@@ -37,6 +37,7 @@
  *****************************************************************************/
 #include "Main.h"
 #include "GDD_Screens.h"
+#include "SST26VF016B.h"
 #define DEBUG_SCREEN 0
 // Configuration bits
 #if defined(__dsPIC33F__) || defined(__PIC24H__)
@@ -82,7 +83,10 @@ _CONFIG3( WPFP_WPFP255 & SOSCSEL_SOSC & WUTSEL_LEG & ALTPMP_ALTPMPEN & WPDIS_WPD
 /////////////////////////////////////////////////////////////////////////////
 #if defined (USE_SST25VF016)
     // initialize GFX3 SST25 flash SPI
-    #define FlashInit(pInitData) SST25Init((DRV_SPI_INIT_DATA*)pInitData)                    
+    #define FlashInit(pInitData) SST25Init((DRV_SPI_INIT_DATA*)pInitData)   
+#elif defined (USE_SST26VF016B)
+    // initialize GFX3 SST25 flash SPI
+    #define FlashInit(pInitData) NVM_SST26VF0XXB_Initialize((DRV_SPI_INIT_DATA*)pInitData)   
 #elif defined (USE_MCHP25LC256)
     // initialize EEPROM on Explorer 16
     #define FlashInit(pInitData) MCHP25LC256Init((DRV_SPI_INIT_DATA*)pInitData)  
@@ -96,14 +100,20 @@ _CONFIG3( WPFP_WPFP255 & SOSCSEL_SOSC & WUTSEL_LEG & ALTPMP_ALTPMPEN & WPDIS_WPD
 // SPI Channel settings
 /////////////////////////////////////////////////////////////////////////////
 #if defined (SPI_CHANNEL_1_ENABLE) || defined (SPI_CHANNEL_2_ENABLE) || defined (SPI_CHANNEL_3_ENABLE) || defined (SPI_CHANNEL_4_ENABLE)
-    #if defined (USE_SST25VF016)
+#if defined (USE_SST25VF016) || defined(USE_SST26VF016B)
         #ifdef __PIC32MX
             const DRV_SPI_INIT_DATA SPI_Init_Data = {SST25_SPI_CHANNEL, 1, 0, 0, 1, 1, 0};
             #ifdef USE_TOUCHSCREEN_AR1020
                 const DRV_SPI_INIT_DATA ar1020SpiInit = {AR1020_SPI_CHANNEL,    44, 0, 0, 0, 0, 0};
             #endif
         #else    
+#if defined(USE_SST25VF016)
             const DRV_SPI_INIT_DATA SPI_Init_Data = {SST25_SPI_CHANNEL, 3, 6, 0, 1, 1, 0};
+#else
+            const DRV_SPI_INIT_DATA SPI_Init_Data = {SST26_SPI_CHANNEL, 3, 6, 0, 1, 1, 0};
+#endif
+
+
             #ifdef USE_TOUCHSCREEN_AR1020
                 const DRV_SPI_INIT_DATA ar1020SpiInit = {AR1020_SPI_CHANNEL,    2,  3, 0, 0, 0, 0};        
             #endif
@@ -137,8 +147,14 @@ Conf_wheel_info       Track_Wheel1, Track_Wheel2;
 Conf_wheel_info_3D2S    Wheel1_3D2S,Wheel2_3D2S;
 Conf_wheel_info_3D2S    Track_Wheel1_3D2S,Track_Wheel2_3D2S;
 
-Conf_wheel_info_3D1S    Wheel_3D1S, Wheel_3D1S_SC;
-Conf_wheel_info_4D1S    Wheel_4D1S, Wheel_4D1S_SC;
+Conf_wheel_info_3D1S    Wheel_3D1S_SC;
+Conf_wheel_info_3D1S    Wheel1_3D1S,Wheel2_3D1S;
+Conf_wheel_info_3D1S    Track_Wheel1_3D1S,Track_Wheel2_3D1S;
+
+Conf_wheel_info_4D1S    Wheel_4D1S_SC;
+Conf_wheel_info_4D1S    Wheel1_4D1S, Wheel2_4D1S;
+Conf_wheel_info_4D1S    Track_Wheel1_4D1S, Track_Wheel2_4D1S;
+
 Conf_wheel_info_LCWS    Wheel_LCWS;
 extern unsigned char Active_data;
 unsigned char CPU_Version = 1;
@@ -1068,74 +1084,163 @@ unsigned char SF_error, EF_error;
 
 void Update_3D1S_Screen()
 {
-    StSetText(((STATICTEXT*) (GOLFindObject(STE_205))), (XCHAR*) "CONF-3DP1S");
-    SetState(((STATICTEXT*) (GOLFindObject(STE_205))), ST_DRAW);
 
+    Wheel1_3D1S.A_ENTRY = GLCD_Info.CPU_Data[0][22] + ((UINT)(GLCD_Info.CPU_Data[0][23])<<8);
+    Wheel1_3D1S.B_ENTRY = GLCD_Info.CPU_Data[0][24] + ((UINT)(GLCD_Info.CPU_Data[0][25])<<8);
+    Wheel1_3D1S.C_ENTRY = GLCD_Info.CPU_Data[0][26] + ((UINT)(GLCD_Info.CPU_Data[0][27])<<8);
+    Wheel1_3D1S.A_EXIT  = GLCD_Info.CPU_Data[0][28] + ((UINT)(GLCD_Info.CPU_Data[0][29])<<8);
+    Wheel1_3D1S.B_EXIT  = GLCD_Info.CPU_Data[0][30] + ((UINT)(GLCD_Info.CPU_Data[0][31])<<8);
+    Wheel1_3D1S.C_EXIT  = GLCD_Info.CPU_Data[0][32] + ((UINT)(GLCD_Info.CPU_Data[0][33])<<8);
+
+    Wheel2_3D1S.A_ENTRY = GLCD_Info.CPU_Data[1][22] + ((UINT)(GLCD_Info.CPU_Data[1][23])<<8);
+    Wheel2_3D1S.B_ENTRY = GLCD_Info.CPU_Data[1][24] + ((UINT)(GLCD_Info.CPU_Data[1][25])<<8);
+    Wheel2_3D1S.C_ENTRY = GLCD_Info.CPU_Data[1][26] + ((UINT)(GLCD_Info.CPU_Data[1][27])<<8);
+    Wheel2_3D1S.A_EXIT  = GLCD_Info.CPU_Data[1][28] + ((UINT)(GLCD_Info.CPU_Data[1][29])<<8);
+    Wheel2_3D1S.B_EXIT  = GLCD_Info.CPU_Data[1][30] + ((UINT)(GLCD_Info.CPU_Data[1][31])<<8);
+    Wheel2_3D1S.C_EXIT  = GLCD_Info.CPU_Data[1][32] + ((UINT)(GLCD_Info.CPU_Data[1][33])<<8);
+    
     if(Packet_src != 1)
     {
-
+        StSetText(((STATICTEXT*) (GOLFindObject(STE_205))), (XCHAR*) "CONF-3DP1S");        
         SetState(((BUTTON*) (GOLFindObject(BTN_610))),BTN_NOPANEL | BTN_HIDE);
     }
+    else
+    {
+        StSetText(((STATICTEXT*) (GOLFindObject(STE_205))), (XCHAR*) "CONFR-3DP1S");        
+        
+        Disp_Info1.Reset_mode = GLCD_Info.CPU_Data[0][10];
+        Disp_Info1.DS_mode = Disp_Info1.Reset_mode & 0x0F;
+        Disp_Info1.US_mode = (Disp_Info1.Reset_mode & 0xF0)>>4;
+        //CPU1
+        if(Disp_Info1.DS_mode == SECTION_OCCUPIED_AT_BOTH_UNITS)
+        {
+			Wheel1_3D1S.A_ENTRY = Wheel1_3D1S.A_ENTRY - Track_Wheel1_3D1S.A_ENTRY;
+			Wheel1_3D1S.B_ENTRY = Wheel1_3D1S.B_ENTRY - Track_Wheel1_3D1S.B_ENTRY;
+			Wheel1_3D1S.C_ENTRY = Wheel1_3D1S.C_ENTRY - Track_Wheel1_3D1S.C_ENTRY;
+			Wheel1_3D1S.A_EXIT  = Wheel1_3D1S.A_EXIT  - Track_Wheel1_3D1S.A_EXIT ;
+			Wheel1_3D1S.B_EXIT  = Wheel1_3D1S.B_EXIT  - Track_Wheel1_3D1S.B_EXIT ;
+			Wheel1_3D1S.C_EXIT  = Wheel1_3D1S.C_EXIT  - Track_Wheel1_3D1S.C_EXIT ;
+        }
+        else if(Disp_Info1.DS_mode != SECTION_WAIT_FOR_PILOT_TRAIN)
+        {
+            if(Disp_Info1.DS_mode == SECTION_CLEAR_AT_BOTH_UNITS)
+            {
+			    Track_Wheel1_3D1S.A_ENTRY = Wheel1_3D1S.A_ENTRY;
+			    Track_Wheel1_3D1S.B_ENTRY = Wheel1_3D1S.B_ENTRY;
+			    Track_Wheel1_3D1S.C_ENTRY = Wheel1_3D1S.C_ENTRY;
+			    Track_Wheel1_3D1S.A_EXIT  = Wheel1_3D1S.A_EXIT ;
+			    Track_Wheel1_3D1S.B_EXIT  = Wheel1_3D1S.B_EXIT ;
+			    Track_Wheel1_3D1S.C_EXIT  = Wheel1_3D1S.C_EXIT ;
+            }
+            else
+            {
+				Track_Wheel1_3D1S.A_ENTRY = 0;
+			    Track_Wheel1_3D1S.B_ENTRY = 0;
+			    Track_Wheel1_3D1S.C_ENTRY = 0;
+			    Track_Wheel1_3D1S.A_EXIT  = 0;
+			    Track_Wheel1_3D1S.B_EXIT  = 0;
+			    Track_Wheel1_3D1S.C_EXIT  = 0;
+            }
+		    Wheel1_3D1S.A_ENTRY = 0;
+			Wheel1_3D1S.B_ENTRY = 0;
+			Wheel1_3D1S.C_ENTRY = 0;
+			Wheel1_3D1S.A_EXIT  = 0;
+			Wheel1_3D1S.B_EXIT  = 0;
+			Wheel1_3D1S.C_EXIT  = 0;
+		}
+        Disp_Info2.Reset_mode = GLCD_Info.CPU_Data[1][10];
+        Disp_Info2.DS_mode = Disp_Info1.Reset_mode & 0x0F;
+        Disp_Info2.US_mode = (Disp_Info1.Reset_mode & 0xF0)>>4;
+        //CPU1
+        if(Disp_Info2.DS_mode == SECTION_OCCUPIED_AT_BOTH_UNITS)
+        {
+			Wheel2_3D1S.A_ENTRY = Wheel2_3D1S.A_ENTRY - Track_Wheel2_3D1S.A_ENTRY;
+			Wheel2_3D1S.B_ENTRY = Wheel2_3D1S.B_ENTRY - Track_Wheel2_3D1S.B_ENTRY;
+			Wheel2_3D1S.C_ENTRY = Wheel2_3D1S.C_ENTRY - Track_Wheel2_3D1S.C_ENTRY;
+			Wheel2_3D1S.A_EXIT  = Wheel2_3D1S.A_EXIT  - Track_Wheel2_3D1S.A_EXIT ;
+			Wheel2_3D1S.B_EXIT  = Wheel2_3D1S.B_EXIT  - Track_Wheel2_3D1S.B_EXIT ;
+			Wheel2_3D1S.C_EXIT  = Wheel2_3D1S.C_EXIT  - Track_Wheel2_3D1S.C_EXIT ;
+        }
+        else if(Disp_Info2.DS_mode != SECTION_WAIT_FOR_PILOT_TRAIN)
+        {
+            if(Disp_Info2.DS_mode == SECTION_CLEAR_AT_BOTH_UNITS)
+            {
+			    Track_Wheel2_3D1S.A_ENTRY = Wheel2_3D1S.A_ENTRY;
+			    Track_Wheel2_3D1S.B_ENTRY = Wheel2_3D1S.B_ENTRY;
+			    Track_Wheel2_3D1S.C_ENTRY = Wheel2_3D1S.C_ENTRY;
+			    Track_Wheel2_3D1S.A_EXIT  = Wheel2_3D1S.A_EXIT ;
+			    Track_Wheel2_3D1S.B_EXIT  = Wheel2_3D1S.B_EXIT ;
+			    Track_Wheel2_3D1S.C_EXIT  = Wheel2_3D1S.C_EXIT ;
+            }
+            else
+            {
+				Track_Wheel2_3D1S.A_ENTRY = 0;
+			    Track_Wheel2_3D1S.B_ENTRY = 0;
+			    Track_Wheel2_3D1S.C_ENTRY = 0;
+			    Track_Wheel2_3D1S.A_EXIT  = 0;
+			    Track_Wheel2_3D1S.B_EXIT  = 0;
+			    Track_Wheel2_3D1S.C_EXIT  = 0;
+            }
+		    Wheel2_3D1S.A_ENTRY = 0;
+			Wheel2_3D1S.B_ENTRY = 0;
+			Wheel2_3D1S.C_ENTRY = 0;
+			Wheel2_3D1S.A_EXIT  = 0;
+			Wheel2_3D1S.B_EXIT  = 0;
+			Wheel2_3D1S.C_EXIT  = 0;
+		}
+
+    }
+    SetState(((STATICTEXT*) (GOLFindObject(STE_205))), ST_DRAW);
+
     //Entry Counts
-    var_count = GLCD_Info.CPU_Data[0][22] + ((UINT)(GLCD_Info.CPU_Data[0][23])<<8);
-    sprintf(&var_buffer[0][0],"%d\n",var_count);
+
+    sprintf(&var_buffer[0][0],"%d\n",Wheel1_3D1S.A_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_338))), (XCHAR*)&var_buffer[0][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_338))), ST_DRAW);
-    Wheel_3D1S.A_ENTRY =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][22] + ((UINT)(GLCD_Info.CPU_Data[1][23])<<8);
-    sprintf(&var_buffer2[0][0],"%d\n",var_count);
+    
+    sprintf(&var_buffer2[0][0],"%d\n",Wheel2_3D1S.A_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_339))), (XCHAR*)&var_buffer2[0][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_339))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][24] + ((UINT)(GLCD_Info.CPU_Data[0][25])<<8);
-    sprintf(&var_buffer[1][0],"%d\n",var_count);
+    sprintf(&var_buffer[1][0],"%d\n",Wheel1_3D1S.B_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_340))), (XCHAR*)&var_buffer[1][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_340))), ST_DRAW);
-    Wheel_3D1S.B_ENTRY =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][24] + ((UINT)(GLCD_Info.CPU_Data[1][25])<<8);
-    sprintf(&var_buffer2[1][0],"%d\n",var_count);
+
+    sprintf(&var_buffer2[1][0],"%d\n",Wheel2_3D1S.B_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_341))), (XCHAR*)&var_buffer2[1][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_341))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][26] + ((UINT)(GLCD_Info.CPU_Data[0][27])<<8);
-    sprintf(&var_buffer[2][0],"%d\n",var_count);
+    sprintf(&var_buffer[2][0],"%d\n",Wheel1_3D1S.C_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_356))), (XCHAR*)&var_buffer[2][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_356))), ST_DRAW);
-    Wheel_3D1S.C_ENTRY =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][26] + ((UINT)(GLCD_Info.CPU_Data[1][27])<<8);
-    sprintf(&var_buffer2[2][0],"%d\n",var_count);
+
+    sprintf(&var_buffer2[2][0],"%d\n",Wheel2_3D1S.C_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_357))), (XCHAR*)&var_buffer2[2][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_357))), ST_DRAW);
 
 
     //Exit count
-    var_count = GLCD_Info.CPU_Data[0][28] + ((UINT)(GLCD_Info.CPU_Data[0][29])<<8);
-    sprintf(&var_buffer[3][0],"%d\n",var_count);
+    sprintf(&var_buffer[3][0],"%d\n",Wheel1_3D1S.A_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_467))), (XCHAR*)&var_buffer[3][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_467))), ST_DRAW);
-    Wheel_3D1S.A_EXIT =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][28] + ((UINT)(GLCD_Info.CPU_Data[1][29])<<8);
-    sprintf(&var_buffer2[3][0],"%d\n",var_count);
+
+    sprintf(&var_buffer2[3][0],"%d\n",Wheel2_3D1S.A_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_468))), (XCHAR*)&var_buffer2[3][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_468))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][30] + ((UINT)(GLCD_Info.CPU_Data[0][31])<<8);
-    sprintf(&var_buffer[4][0],"%d\n",var_count);
+    sprintf(&var_buffer[4][0],"%d\n",Wheel1_3D1S.B_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_469))), (XCHAR*)&var_buffer[4][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_469))), ST_DRAW);
-    Wheel_3D1S.B_EXIT =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][30] + ((UINT)(GLCD_Info.CPU_Data[1][31])<<8);
-    sprintf(&var_buffer2[4][0],"%d\n",var_count);
+
+    sprintf(&var_buffer2[4][0],"%d\n",Wheel2_3D1S.B_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_470))), (XCHAR*)&var_buffer2[4][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_470))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][32] + ((UINT)(GLCD_Info.CPU_Data[0][33])<<8);
-    sprintf(&var_buffer[5][0],"%d\n",var_count);
+    sprintf(&var_buffer[5][0],"%d\n",Wheel1_3D1S.C_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_473))), (XCHAR*)&var_buffer[5][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_473))), ST_DRAW);
-    Wheel_3D1S.C_EXIT =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][32] + ((UINT)(GLCD_Info.CPU_Data[1][33])<<8);
-    sprintf(&var_buffer2[5][0],"%d\n",var_count);
+
+    sprintf(&var_buffer2[5][0],"%d\n",Wheel2_3D1S.C_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_474))), (XCHAR*)&var_buffer2[5][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_474))), ST_DRAW);
 
@@ -1156,12 +1261,12 @@ void Update_3D1S_Screen()
     if(Disp_Info.DS_mode == SECTION_OCCUPIED_AT_BOTH_UNITS)
     {
         // DP A
-        if(Wheel_3D1S.A_ENTRY > Wheel_3D1S_SC.A_ENTRY)
+        if(Wheel1_3D1S.A_ENTRY > Wheel_3D1S_SC.A_ENTRY)
         {
             PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_377))), (void*)&logo_small2_db2_inv);
             SetState(((PICTURE*)(GOLFindObject(PCB_377))), PICT_DRAW);            
         }
-        else if(Wheel_3D1S.A_EXIT > Wheel_3D1S_SC.A_EXIT)
+        else if(Wheel1_3D1S.A_EXIT > Wheel_3D1S_SC.A_EXIT)
         {
             PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_377))), (void*)&logo_small2_db2);
             SetState(((PICTURE*)(GOLFindObject(PCB_377))), PICT_DRAW);            
@@ -1173,12 +1278,12 @@ void Update_3D1S_Screen()
         }
         
         // DP B
-        if(Wheel_3D1S.B_ENTRY > Wheel_3D1S_SC.B_ENTRY)
+        if(Wheel1_3D1S.B_ENTRY > Wheel_3D1S_SC.B_ENTRY)
         {
             PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_378))), (void*)&logo_small2_db2);
             SetState(((PICTURE*)(GOLFindObject(PCB_378))), PICT_DRAW);            
         }
-        else if(Wheel_3D1S.B_EXIT > Wheel_3D1S_SC.B_EXIT)
+        else if(Wheel1_3D1S.B_EXIT > Wheel_3D1S_SC.B_EXIT)
         {
             PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_378))), (void*)&logo_small2_db2_inv);
             SetState(((PICTURE*)(GOLFindObject(PCB_378))), PICT_DRAW);            
@@ -1190,12 +1295,12 @@ void Update_3D1S_Screen()
         }
         
         // DP C
-        if(Wheel_3D1S.C_ENTRY > Wheel_3D1S_SC.C_ENTRY)
+        if(Wheel1_3D1S.C_ENTRY > Wheel_3D1S_SC.C_ENTRY)
         {
             PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_379))), (void*)&logo_small2_db2);
             SetState(((PICTURE*)(GOLFindObject(PCB_379))), PICT_DRAW);            
         }
-        else if(Wheel_3D1S.C_EXIT > Wheel_3D1S_SC.C_EXIT)
+        else if(Wheel1_3D1S.C_EXIT > Wheel_3D1S_SC.C_EXIT)
         {
             PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_379))), (void*)&logo_small2_db2_inv);
             SetState(((PICTURE*)(GOLFindObject(PCB_379))), PICT_DRAW);            
@@ -1215,12 +1320,12 @@ void Update_3D1S_Screen()
                     PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_379))), (void*)&No_Train);
                     SetState(((PICTURE*)(GOLFindObject(PCB_379))), PICT_DRAW);
                     
-                    Wheel_3D1S_SC.A_ENTRY = Wheel_3D1S.A_ENTRY;
-                    Wheel_3D1S_SC.B_ENTRY = Wheel_3D1S.B_ENTRY;   
-                    Wheel_3D1S_SC.C_ENTRY = Wheel_3D1S.C_ENTRY;
-                    Wheel_3D1S_SC.A_EXIT = Wheel_3D1S.A_EXIT;
-                    Wheel_3D1S_SC.B_EXIT = Wheel_3D1S.B_EXIT;   
-                    Wheel_3D1S_SC.C_EXIT = Wheel_3D1S.C_EXIT;
+                    Wheel_3D1S_SC.A_ENTRY = Wheel1_3D1S.A_ENTRY;
+                    Wheel_3D1S_SC.B_ENTRY = Wheel1_3D1S.B_ENTRY;   
+                    Wheel_3D1S_SC.C_ENTRY = Wheel1_3D1S.C_ENTRY;
+                    Wheel_3D1S_SC.A_EXIT =  Wheel1_3D1S.A_EXIT;
+                    Wheel_3D1S_SC.B_EXIT =  Wheel1_3D1S.B_EXIT;   
+                    Wheel_3D1S_SC.C_EXIT =  Wheel1_3D1S.C_EXIT;
     }
 
         var_count = GLCD_Info.CPU_Data[0][54];
@@ -1245,7 +1350,7 @@ void Update_3D1S_Screen()
                 sprintf(&var_buffer_r[1][0], "Reset Applied\n");
                 break;
             case SECTION_WAIT_FOR_PILOT_TRAIN:
-                if(Wheel_3D1S.A_ENTRY==0 && Wheel_3D1S.B_ENTRY==0 && Wheel_3D1S.C_ENTRY==0 && Wheel_3D1S.A_EXIT==0 && Wheel_3D1S.B_EXIT==0 && Wheel_3D1S.C_EXIT==0)
+                if(Wheel1_3D1S.A_ENTRY==0 && Wheel1_3D1S.B_ENTRY==0 && Wheel1_3D1S.C_ENTRY==0 && Wheel1_3D1S.A_EXIT==0 && Wheel1_3D1S.B_EXIT==0 && Wheel1_3D1S.C_EXIT==0)
                 {
                     sprintf(&var_buffer_r[0][0], "Waiting for pilot train\n");
                     sprintf(&var_buffer_r[1][0], "Waiting for pilot train\n");
@@ -1257,11 +1362,11 @@ void Update_3D1S_Screen()
                 }
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[0][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[1][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[0][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[1][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -1342,7 +1447,7 @@ void Update_3D1S_Screen()
                 break;
             case SECTION_WAIT_FOR_PILOT_TRAIN:
 //                sprintf(&var_buffer_r_r[3][0], "Waiting for pilot train\n");
-                if(Wheel_3D1S.A_ENTRY==0 && Wheel_3D1S.B_ENTRY==0 && Wheel_3D1S.C_ENTRY==0 && Wheel_3D1S.A_EXIT==0 && Wheel_3D1S.B_EXIT==0 && Wheel_3D1S.C_EXIT==0)
+                if(Wheel1_3D1S.A_ENTRY==0 && Wheel1_3D1S.B_ENTRY==0 && Wheel1_3D1S.C_ENTRY==0 && Wheel1_3D1S.A_EXIT==0 && Wheel1_3D1S.B_EXIT==0 && Wheel1_3D1S.C_EXIT==0)
                 {
                     sprintf(&var_buffer_r[2][0], "Waiting for pilot train\n");
                 }
@@ -1352,11 +1457,11 @@ void Update_3D1S_Screen()
                 }
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-//                sprintf(&var_buffer_r_r[3][0], "Sectiom Clear\n");
+//                sprintf(&var_buffer_r_r[3][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[2][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-//                sprintf(&var_buffer_r_r[3][0], "Sectiom Occupied\n");
+//                sprintf(&var_buffer_r_r[3][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[2][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -1465,92 +1570,190 @@ void Update_3D1S_Screen()
 
 void Update_4D1S_Screen()
 {
-    StSetText(((STATICTEXT*) (GOLFindObject(STE_533))), (XCHAR*) "CONF-4DP1S");
-    SetState(((STATICTEXT*) (GOLFindObject(STE_533))), ST_DRAW);
+    
+    Wheel1_4D1S.A_ENTRY = GLCD_Info.CPU_Data[0][22] + ((UINT)(GLCD_Info.CPU_Data[0][23])<<8);
+    Wheel1_4D1S.B_ENTRY = GLCD_Info.CPU_Data[0][24] + ((UINT)(GLCD_Info.CPU_Data[0][25])<<8);	
+    Wheel1_4D1S.C_ENTRY = GLCD_Info.CPU_Data[0][26] + ((UINT)(GLCD_Info.CPU_Data[0][27])<<8);
+    Wheel1_4D1S.D_ENTRY = GLCD_Info.CPU_Data[0][28] + ((UINT)(GLCD_Info.CPU_Data[0][29])<<8);	
+    Wheel1_4D1S.A_EXIT  = GLCD_Info.CPU_Data[0][30] + ((UINT)(GLCD_Info.CPU_Data[0][31])<<8);
+    Wheel1_4D1S.B_EXIT  = GLCD_Info.CPU_Data[0][32] + ((UINT)(GLCD_Info.CPU_Data[0][33])<<8);
+    Wheel1_4D1S.C_EXIT  = GLCD_Info.CPU_Data[0][34] + ((UINT)(GLCD_Info.CPU_Data[0][35])<<8);	
+    Wheel1_4D1S.D_EXIT  = GLCD_Info.CPU_Data[0][36] + ((UINT)(GLCD_Info.CPU_Data[0][37])<<8);	
+	
+    Wheel2_4D1S.A_ENTRY = GLCD_Info.CPU_Data[1][22] + ((UINT)(GLCD_Info.CPU_Data[1][23])<<8);
+    Wheel2_4D1S.B_ENTRY = GLCD_Info.CPU_Data[1][24] + ((UINT)(GLCD_Info.CPU_Data[1][25])<<8);	
+    Wheel2_4D1S.C_ENTRY = GLCD_Info.CPU_Data[1][26] + ((UINT)(GLCD_Info.CPU_Data[1][27])<<8);
+    Wheel2_4D1S.D_ENTRY = GLCD_Info.CPU_Data[1][28] + ((UINT)(GLCD_Info.CPU_Data[1][29])<<8);	
+    Wheel2_4D1S.A_EXIT  = GLCD_Info.CPU_Data[1][30] + ((UINT)(GLCD_Info.CPU_Data[1][31])<<8);
+    Wheel2_4D1S.B_EXIT  = GLCD_Info.CPU_Data[1][32] + ((UINT)(GLCD_Info.CPU_Data[1][33])<<8);
+    Wheel2_4D1S.C_EXIT  = GLCD_Info.CPU_Data[1][34] + ((UINT)(GLCD_Info.CPU_Data[1][35])<<8);	
+    Wheel2_4D1S.D_EXIT  = GLCD_Info.CPU_Data[1][36] + ((UINT)(GLCD_Info.CPU_Data[1][37])<<8);		    
 
     if(Packet_src != 1)
     {
         SetState(((BUTTON*) (GOLFindObject(BTN_609))),BTN_NOPANEL | BTN_HIDE);
-    }//Entry Counts
-    var_count = GLCD_Info.CPU_Data[0][22] + ((UINT)(GLCD_Info.CPU_Data[0][23])<<8);
-    sprintf(&var_buffer[0][0],"%d\n",var_count);
+        StSetText(((STATICTEXT*) (GOLFindObject(STE_533))), (XCHAR*) "CONF-4DP1S");
+    }
+    else
+    {
+        StSetText(((STATICTEXT*) (GOLFindObject(STE_533))), (XCHAR*) "CONFR-4DP1S");
+        
+                Disp_Info1.Reset_mode = GLCD_Info.CPU_Data[0][10];
+        Disp_Info1.DS_mode = Disp_Info1.Reset_mode & 0x0F;
+        Disp_Info1.US_mode = (Disp_Info1.Reset_mode & 0xF0)>>4;
+        //CPU1
+        if(Disp_Info1.DS_mode == SECTION_OCCUPIED_AT_BOTH_UNITS)
+        {
+			Wheel1_4D1S.A_ENTRY = Wheel1_4D1S.A_ENTRY - Track_Wheel1_4D1S.A_ENTRY;
+			Wheel1_4D1S.B_ENTRY = Wheel1_4D1S.B_ENTRY - Track_Wheel1_4D1S.B_ENTRY;
+			Wheel1_4D1S.C_ENTRY = Wheel1_4D1S.C_ENTRY - Track_Wheel1_4D1S.C_ENTRY;
+			Wheel1_4D1S.D_ENTRY = Wheel1_4D1S.D_ENTRY - Track_Wheel1_4D1S.D_ENTRY;
+			Wheel1_4D1S.A_EXIT  = Wheel1_4D1S.A_EXIT  - Track_Wheel1_4D1S.A_EXIT ;
+			Wheel1_4D1S.B_EXIT  = Wheel1_4D1S.B_EXIT  - Track_Wheel1_4D1S.B_EXIT ;
+			Wheel1_4D1S.C_EXIT  = Wheel1_4D1S.C_EXIT  - Track_Wheel1_4D1S.C_EXIT ;
+			Wheel1_4D1S.D_EXIT  = Wheel1_4D1S.D_EXIT  - Track_Wheel1_4D1S.D_EXIT ;
+		}
+        else if(Disp_Info1.DS_mode != SECTION_WAIT_FOR_PILOT_TRAIN)
+        {
+            if(Disp_Info1.DS_mode == SECTION_CLEAR_AT_BOTH_UNITS)
+            {
+			    Track_Wheel1_4D1S.A_ENTRY = Wheel1_4D1S.A_ENTRY;
+			    Track_Wheel1_4D1S.B_ENTRY = Wheel1_4D1S.B_ENTRY;
+			    Track_Wheel1_4D1S.C_ENTRY = Wheel1_4D1S.C_ENTRY;
+				Track_Wheel1_4D1S.D_ENTRY = Wheel1_4D1S.D_ENTRY;
+			    Track_Wheel1_4D1S.A_EXIT  = Wheel1_4D1S.A_EXIT ;
+			    Track_Wheel1_4D1S.B_EXIT  = Wheel1_4D1S.B_EXIT ;
+			    Track_Wheel1_4D1S.C_EXIT  = Wheel1_4D1S.C_EXIT ;
+				Track_Wheel1_4D1S.D_EXIT  = Wheel1_4D1S.D_EXIT ;
+            }
+            else
+            {
+				Track_Wheel1_4D1S.A_ENTRY = 0;
+			    Track_Wheel1_4D1S.B_ENTRY = 0;
+			    Track_Wheel1_4D1S.C_ENTRY = 0;
+				Track_Wheel1_4D1S.D_ENTRY = 0;
+			    Track_Wheel1_4D1S.A_EXIT  = 0;
+			    Track_Wheel1_4D1S.B_EXIT  = 0;
+			    Track_Wheel1_4D1S.C_EXIT  = 0;
+				Track_Wheel1_4D1S.D_EXIT  = 0;
+            }
+		    Wheel1_4D1S.A_ENTRY = 0;
+			Wheel1_4D1S.B_ENTRY = 0;
+			Wheel1_4D1S.C_ENTRY = 0;
+			Wheel1_4D1S.D_ENTRY = 0;
+			Wheel1_4D1S.A_EXIT  = 0;
+			Wheel1_4D1S.B_EXIT  = 0;
+			Wheel1_4D1S.C_EXIT  = 0;
+			Wheel1_4D1S.D_EXIT  = 0;
+		}
+        Disp_Info2.Reset_mode = GLCD_Info.CPU_Data[1][10];
+        Disp_Info2.DS_mode = Disp_Info1.Reset_mode & 0x0F;
+        Disp_Info2.US_mode = (Disp_Info1.Reset_mode & 0xF0)>>4;
+        //CPU1
+        if(Disp_Info2.DS_mode == SECTION_OCCUPIED_AT_BOTH_UNITS)
+        {
+			Wheel2_4D1S.A_ENTRY = Wheel2_4D1S.A_ENTRY - Track_Wheel2_4D1S.A_ENTRY;
+			Wheel2_4D1S.B_ENTRY = Wheel2_4D1S.B_ENTRY - Track_Wheel2_4D1S.B_ENTRY;
+			Wheel2_4D1S.C_ENTRY = Wheel2_4D1S.C_ENTRY - Track_Wheel2_4D1S.C_ENTRY;
+			Wheel2_4D1S.D_ENTRY = Wheel2_4D1S.D_ENTRY - Track_Wheel2_4D1S.D_ENTRY;
+			Wheel2_4D1S.A_EXIT  = Wheel2_4D1S.A_EXIT  - Track_Wheel2_4D1S.A_EXIT ;
+			Wheel2_4D1S.B_EXIT  = Wheel2_4D1S.B_EXIT  - Track_Wheel2_4D1S.B_EXIT ;
+			Wheel2_4D1S.C_EXIT  = Wheel2_4D1S.C_EXIT  - Track_Wheel2_4D1S.C_EXIT ;
+			Wheel2_4D1S.D_EXIT  = Wheel2_4D1S.D_EXIT  - Track_Wheel2_4D1S.D_EXIT ;
+		}
+        else if(Disp_Info2.DS_mode != SECTION_WAIT_FOR_PILOT_TRAIN)
+        {
+            if(Disp_Info2.DS_mode == SECTION_CLEAR_AT_BOTH_UNITS)
+            {
+			    Track_Wheel2_4D1S.A_ENTRY = Wheel2_4D1S.A_ENTRY;
+			    Track_Wheel2_4D1S.B_ENTRY = Wheel2_4D1S.B_ENTRY;
+			    Track_Wheel2_4D1S.C_ENTRY = Wheel2_4D1S.C_ENTRY;
+				Track_Wheel2_4D1S.D_ENTRY = Wheel2_4D1S.D_ENTRY;
+			    Track_Wheel2_4D1S.A_EXIT  = Wheel2_4D1S.A_EXIT ;
+			    Track_Wheel2_4D1S.B_EXIT  = Wheel2_4D1S.B_EXIT ;
+			    Track_Wheel2_4D1S.C_EXIT  = Wheel2_4D1S.C_EXIT ;
+				Track_Wheel2_4D1S.D_EXIT  = Wheel2_4D1S.D_EXIT ;
+            }
+            else
+            {
+				Track_Wheel2_4D1S.A_ENTRY = 0;
+			    Track_Wheel2_4D1S.B_ENTRY = 0;
+			    Track_Wheel2_4D1S.C_ENTRY = 0;
+				Track_Wheel2_4D1S.D_ENTRY = 0;
+			    Track_Wheel2_4D1S.A_EXIT  = 0;
+			    Track_Wheel2_4D1S.B_EXIT  = 0;
+			    Track_Wheel2_4D1S.C_EXIT  = 0;
+				Track_Wheel2_4D1S.D_EXIT  = 0;
+            }
+		    Wheel2_4D1S.A_ENTRY = 0;
+			Wheel2_4D1S.B_ENTRY = 0;
+			Wheel2_4D1S.C_ENTRY = 0;
+			Wheel2_4D1S.D_ENTRY = 0;
+			Wheel2_4D1S.A_EXIT  = 0;
+			Wheel2_4D1S.B_EXIT  = 0;
+			Wheel2_4D1S.C_EXIT  = 0;
+			Wheel2_4D1S.D_EXIT  = 0;
+		}
+    }
+    SetState(((STATICTEXT*) (GOLFindObject(STE_533))), ST_DRAW);
+    //Entry Counts
+
+    sprintf(&var_buffer[0][0],"%d\n",Wheel1_4D1S.A_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_584))), (XCHAR*)&var_buffer[0][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_584))), ST_DRAW);
-    Wheel_4D1S.A_ENTRY =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][22] + ((UINT)(GLCD_Info.CPU_Data[1][23])<<8);
-    sprintf(&var_buffer2[0][0],"%d\n",var_count);
+    sprintf(&var_buffer2[0][0],"%d\n",Wheel2_4D1S.A_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_585))), (XCHAR*)&var_buffer2[0][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_585))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][24] + ((UINT)(GLCD_Info.CPU_Data[0][25])<<8);
-    sprintf(&var_buffer[1][0],"%d\n",var_count);
+
+    sprintf(&var_buffer[1][0],"%d\n",Wheel1_4D1S.B_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_586))), (XCHAR*)&var_buffer[1][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_586))), ST_DRAW);
-    Wheel_4D1S.B_ENTRY =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][24] + ((UINT)(GLCD_Info.CPU_Data[1][25])<<8);
-    sprintf(&var_buffer2[1][0],"%d\n",var_count);
+    sprintf(&var_buffer2[1][0],"%d\n",Wheel2_4D1S.B_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_587))), (XCHAR*)&var_buffer2[1][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_587))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][26] + ((UINT)(GLCD_Info.CPU_Data[0][27])<<8);
-    sprintf(&var_buffer[2][0],"%d\n",var_count);
+    sprintf(&var_buffer[2][0],"%d\n",Wheel1_4D1S.C_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_588))), (XCHAR*)&var_buffer[2][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_588))), ST_DRAW);
-    Wheel_4D1S.C_ENTRY =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][26] + ((UINT)(GLCD_Info.CPU_Data[1][27])<<8);
-    sprintf(&var_buffer2[2][0],"%d\n",var_count);
+    sprintf(&var_buffer2[2][0],"%d\n",Wheel2_4D1S.C_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_589))), (XCHAR*)&var_buffer2[2][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_589))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][28] + ((UINT)(GLCD_Info.CPU_Data[0][29])<<8);
-    sprintf(&var_buffer[3][0],"%d\n",var_count);
+    sprintf(&var_buffer[3][0],"%d\n",Wheel1_4D1S.D_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_590))), (XCHAR*)&var_buffer[3][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_590))), ST_DRAW);
-    Wheel_4D1S.D_ENTRY =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][28] + ((UINT)(GLCD_Info.CPU_Data[1][29])<<8);
-    sprintf(&var_buffer2[3][0],"%d\n",var_count);
+    sprintf(&var_buffer2[3][0],"%d\n",Wheel2_4D1S.D_ENTRY);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_591))), (XCHAR*)&var_buffer2[3][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_591))), ST_DRAW);
 
     //Exit count
 
-    var_count = GLCD_Info.CPU_Data[0][30] + ((UINT)(GLCD_Info.CPU_Data[0][31])<<8);
-    sprintf(&var_buffer[4][0],"%d\n",var_count);
+    sprintf(&var_buffer[4][0],"%d\n",Wheel1_4D1S.A_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_596))), (XCHAR*)&var_buffer[4][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_596))), ST_DRAW);
-    Wheel_4D1S.A_EXIT =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][30] + ((UINT)(GLCD_Info.CPU_Data[1][31])<<8);
-    sprintf(&var_buffer2[4][0],"%d\n",var_count);
+    sprintf(&var_buffer2[4][0],"%d\n",Wheel2_4D1S.A_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_597))), (XCHAR*)&var_buffer2[4][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_597))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][32] + ((UINT)(GLCD_Info.CPU_Data[0][33])<<8);
-    sprintf(&var_buffer[5][0],"%d\n",var_count);
+    sprintf(&var_buffer[5][0],"%d\n",Wheel1_4D1S.B_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_598))), (XCHAR*)&var_buffer[5][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_598))), ST_DRAW);
-    Wheel_4D1S.B_EXIT =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][32] + ((UINT)(GLCD_Info.CPU_Data[1][33])<<8);
-    sprintf(&var_buffer2[5][0],"%d\n",var_count);
+    sprintf(&var_buffer2[5][0],"%d\n",Wheel2_4D1S.B_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_599))), (XCHAR*)&var_buffer2[5][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_599))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][34] + ((UINT)(GLCD_Info.CPU_Data[0][35])<<8);
-    sprintf(&var_buffer[6][0],"%d\n",var_count);
+    sprintf(&var_buffer[6][0],"%d\n",Wheel1_4D1S.C_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_600))), (XCHAR*)&var_buffer[6][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_600))), ST_DRAW);
-    Wheel_4D1S.C_EXIT =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][34] + ((UINT)(GLCD_Info.CPU_Data[1][35])<<8);
-    sprintf(&var_buffer2[6][0],"%d\n",var_count);
+    sprintf(&var_buffer2[6][0],"%d\n",Wheel2_4D1S.C_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_601))), (XCHAR*)&var_buffer2[6][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_601))), ST_DRAW);
 
-    var_count = GLCD_Info.CPU_Data[0][36] + ((UINT)(GLCD_Info.CPU_Data[0][37])<<8);
-    sprintf(&var_buffer[7][0],"%d\n",var_count);
+    sprintf(&var_buffer[7][0],"%d\n",Wheel1_4D1S.D_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_602))), (XCHAR*)&var_buffer[7][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_602))), ST_DRAW);
-    Wheel_4D1S.D_EXIT =  var_count;
-    var_count = GLCD_Info.CPU_Data[1][36] + ((UINT)(GLCD_Info.CPU_Data[1][37])<<8);
-    sprintf(&var_buffer2[7][0],"%d\n",var_count);
+    sprintf(&var_buffer2[7][0],"%d\n",Wheel2_4D1S.D_EXIT);
     StSetText(((STATICTEXT*)(GOLFindObject(STE_603))), (XCHAR*)&var_buffer2[7][0]);
     SetState(((STATICTEXT*)(GOLFindObject(STE_603))), ST_DRAW);
 
@@ -1575,13 +1778,13 @@ void Update_4D1S_Screen()
     if(Disp_Info.DS_mode == SECTION_OCCUPIED_AT_BOTH_UNITS)
     {
         // DP A
-        if(Wheel_4D1S.A_ENTRY > Wheel_4D1S_SC.A_ENTRY)
+        if(Wheel1_4D1S.A_ENTRY > Wheel_4D1S_SC.A_ENTRY)
         {
             A_Dir = 1;
 //            PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_607))), (void*)&logo_small2_db2_inv);
 //            SetState(((PICTURE*)(GOLFindObject(PCB_607))), PICT_DRAW);
         }
-        else if(Wheel_4D1S.A_EXIT > Wheel_4D1S_SC.A_EXIT)
+        else if(Wheel1_4D1S.A_EXIT > Wheel_4D1S_SC.A_EXIT)
         {
             A_Dir = 2;
 //            PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_607))), (void*)&logo_small2_db2);
@@ -1595,13 +1798,13 @@ void Update_4D1S_Screen()
         }
 
         // DP B
-        if(Wheel_4D1S.B_ENTRY > Wheel_4D1S_SC.B_ENTRY)
+        if(Wheel1_4D1S.B_ENTRY > Wheel_4D1S_SC.B_ENTRY)
         {
             B_Dir = 1;
 //            PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_609))), (void*)&logo_small2_db2);
 //            SetState(((PICTURE*)(GOLFindObject(PCB_609))), PICT_DRAW);
         }
-        else if(Wheel_4D1S.B_EXIT > Wheel_4D1S_SC.B_EXIT)
+        else if(Wheel1_4D1S.B_EXIT > Wheel_4D1S_SC.B_EXIT)
         {
             B_Dir = 2;
 //            PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_609))), (void*)&logo_small2_db2_inv);
@@ -1615,13 +1818,13 @@ void Update_4D1S_Screen()
         }
 
         // DP C
-        if(Wheel_4D1S.C_ENTRY > Wheel_4D1S_SC.C_ENTRY)
+        if(Wheel1_4D1S.C_ENTRY > Wheel_4D1S_SC.C_ENTRY)
         {
             C_Dir = 1;
 //            PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_611))), (void*)&logo_small2_db2);
 //            SetState(((PICTURE*)(GOLFindObject(PCB_611))), PICT_DRAW);
         }
-        else if(Wheel_4D1S.C_EXIT > Wheel_4D1S_SC.C_EXIT)
+        else if(Wheel1_4D1S.C_EXIT > Wheel_4D1S_SC.C_EXIT)
         {
             C_Dir = 2;
 //            PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_611))), (void*)&logo_small2_db2_inv);
@@ -1635,13 +1838,13 @@ void Update_4D1S_Screen()
         }
 
 		// DP D
-        if(Wheel_4D1S.D_ENTRY > Wheel_4D1S_SC.D_ENTRY)
+        if(Wheel1_4D1S.D_ENTRY > Wheel_4D1S_SC.D_ENTRY)
         {
             D_Dir = 1;
 //            PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_613))), (void*)&logo_small2_db2);
 //            SetState(((PICTURE*)(GOLFindObject(PCB_613))), PICT_DRAW);
         }
-        else if(Wheel_4D1S.D_EXIT > Wheel_4D1S_SC.D_EXIT)
+        else if(Wheel1_4D1S.D_EXIT > Wheel_4D1S_SC.D_EXIT)
         {
             D_Dir = 2;
 //            PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_613))), (void*)&logo_small2_db2_inv);
@@ -1665,14 +1868,14 @@ void Update_4D1S_Screen()
 //                    PictSetBitmap(((PICTURE*)(GOLFindObject(PCB_613))), (void*)&No_Train);
 //                    SetState(((PICTURE*)(GOLFindObject(PCB_613))), PICT_DRAW);
 
-                    Wheel_4D1S_SC.A_ENTRY = Wheel_4D1S.A_ENTRY;
-                    Wheel_4D1S_SC.B_ENTRY = Wheel_4D1S.B_ENTRY;
-                    Wheel_4D1S_SC.C_ENTRY = Wheel_4D1S.C_ENTRY;
-                    Wheel_4D1S_SC.D_ENTRY = Wheel_4D1S.D_ENTRY;
-                    Wheel_4D1S_SC.A_EXIT = Wheel_4D1S.A_EXIT;
-                    Wheel_4D1S_SC.B_EXIT = Wheel_4D1S.B_EXIT;
-                    Wheel_4D1S_SC.C_EXIT = Wheel_4D1S.C_EXIT;
-                    Wheel_4D1S_SC.D_EXIT = Wheel_4D1S.D_EXIT;
+                    Wheel_4D1S_SC.A_ENTRY = Wheel1_4D1S.A_ENTRY;
+                    Wheel_4D1S_SC.B_ENTRY = Wheel1_4D1S.B_ENTRY;
+                    Wheel_4D1S_SC.C_ENTRY = Wheel1_4D1S.C_ENTRY;
+                    Wheel_4D1S_SC.D_ENTRY = Wheel1_4D1S.D_ENTRY;
+                    Wheel_4D1S_SC.A_EXIT  = Wheel1_4D1S.A_EXIT;
+                    Wheel_4D1S_SC.B_EXIT  = Wheel1_4D1S.B_EXIT;
+                    Wheel_4D1S_SC.C_EXIT  = Wheel1_4D1S.C_EXIT;
+                    Wheel_4D1S_SC.D_EXIT  = Wheel1_4D1S.D_EXIT;
     }
 
 //    SetState(((RADIOBUTTON*) (GOLFindObject(RDB_608))), ST_HIDE);
@@ -1856,7 +2059,7 @@ void Update_4D1S_Screen()
                 sprintf(&var_buffer_r[1][0], "Reset Applied\n");
                 break;
             case SECTION_WAIT_FOR_PILOT_TRAIN:
-                if(Wheel_4D1S.A_ENTRY==0 && Wheel_4D1S.B_ENTRY==0 && Wheel_4D1S.C_ENTRY==0 && Wheel_4D1S.D_ENTRY==0 && Wheel_4D1S.A_EXIT==0 && Wheel_4D1S.B_EXIT==0 && Wheel_4D1S.C_EXIT==0 && Wheel_4D1S.D_EXIT==0)
+                if(Wheel1_4D1S.A_ENTRY==0 && Wheel1_4D1S.B_ENTRY==0 && Wheel1_4D1S.C_ENTRY==0 && Wheel1_4D1S.D_ENTRY==0 && Wheel1_4D1S.A_EXIT==0 && Wheel1_4D1S.B_EXIT==0 && Wheel1_4D1S.C_EXIT==0 && Wheel1_4D1S.D_EXIT==0)
                 {
                     sprintf(&var_buffer_r[0][0], "Waiting for pilot train\n");
                     sprintf(&var_buffer_r[1][0], "Waiting for pilot train\n");
@@ -1868,11 +2071,11 @@ void Update_4D1S_Screen()
                 }
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[0][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[1][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[0][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[1][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -2387,11 +2590,11 @@ void Update_Reset_Message() {
                 sprintf(&var_buffer_r[1][0], "Waiting for pilot train\n");
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[0][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[1][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[0][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[1][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -2531,11 +2734,11 @@ void Update_Reset_Message() {
                 sprintf(&var_buffer_r[1][0], "Waiting for pilot train\n");
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[0][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[1][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[0][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[1][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -2619,11 +2822,11 @@ void Update_Reset_Message() {
                 sprintf(&var_buffer_r[2][0], "Waiting for pilot train\n");
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[3][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[2][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[3][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[2][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -2782,11 +2985,11 @@ void Update_Reset_Message() {
                 sprintf(&var_buffer_r[0][0], "Waiting for pilot train\n");
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[1][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[1][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[0][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[1][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[1][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[0][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -2870,11 +3073,11 @@ void Update_Reset_Message() {
                 sprintf(&var_buffer_r[2][0], "Waiting for pilot train\n");
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[3][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[2][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[3][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[2][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -2988,11 +3191,11 @@ void Update_Reset_Message() {
                 sprintf(&var_buffer_r[0][0], "Waiting for pilot train\n");
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[1][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[1][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[0][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[1][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[1][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[0][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -3962,11 +4165,11 @@ void Update_C_3DP2S_Screen()
                 }
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[0][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[1][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[0][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[1][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -4058,11 +4261,11 @@ void Update_C_3DP2S_Screen()
                 }
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[3][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[2][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[3][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[2][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -4154,7 +4357,7 @@ void Update_C_3DP_SF_Screen()
 
     Conf_wheel_info_3D_SF    Wheel_3D_SF;
 
-        SetState(((BUTTON*) (GOLFindObject(BTN_608))), BTN_NOPANEL |BTN_HIDE);
+    SetState(((BUTTON*) (GOLFindObject(BTN_608))), BTN_NOPANEL |BTN_HIDE);
 	StSetText(((STATICTEXT*) (GOLFindObject(STE_91))), (XCHAR*) "CONF-3DP");
 	SetState(((STATICTEXT*)(GOLFindObject(STE_91))), ST_DRAW);
 
@@ -4479,11 +4682,11 @@ void Update_C_3DP_SF_Screen()
                 }
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[0][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[1][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[0][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[1][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -4575,11 +4778,11 @@ void Update_C_3DP_SF_Screen()
                 }
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[3][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[2][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[3][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[2][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -4996,11 +5199,11 @@ void Update_C_3DP_EF_Screen()
                 }                
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[0][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[1][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[0][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[0][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[1][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -5092,11 +5295,11 @@ void Update_C_3DP_EF_Screen()
                 }
                 break;
             case SECTION_CLEAR_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Clear\n");
+                sprintf(&var_buffer_r[3][0], "SECTION CLEAR\n");
                 sprintf(&var_buffer_r[2][0], "SECTION CLEAR\n");
                 break;
             case SECTION_OCCUPIED_AT_BOTH_UNITS:
-                sprintf(&var_buffer_r[3][0], "Sectiom Occupied\n");
+                sprintf(&var_buffer_r[3][0], "SECTION OCCUPIED\n");
                 sprintf(&var_buffer_r[2][0], "SECTION OCCUPIED\n");
                 break;
             case ERROR_LOCAL_UNIT_WAITING_FOR_RESET:
@@ -6414,7 +6617,7 @@ int main(void)
         else
         {
             GCPU_ACTIVE = 1;
-            if(sense_key == 1) //z
+            if(sense_key == 1) //
             {
                 Screen_Off = 1;
             }

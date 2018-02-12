@@ -17,6 +17,7 @@
         <itemPath>../../../Board Support Package/SST39LF400.h</itemPath>
         <itemPath>../../../Board Support Package/SST39VF040.h</itemPath>
         <itemPath>../../../Board Support Package/MCHP25LC256.h</itemPath>
+        <itemPath>SST26VF016B.h</itemPath>
       </logicalFolder>
       <logicalFolder name="Common" displayName="Common" projectFiles="true">
         <itemPath>../../../Microchip/Include/TimeDelay.h</itemPath>
@@ -95,6 +96,7 @@
         <itemPath>../../../Board Support Package/SST39LF400.c</itemPath>
         <itemPath>../../../Board Support Package/SST39VF040.c</itemPath>
         <itemPath>../../../Board Support Package/MCHP25LC256.c</itemPath>
+        <itemPath>SST26VF016B.c</itemPath>
       </logicalFolder>
       <logicalFolder name="Common" displayName="Common" projectFiles="true">
         <itemPath>../../../Microchip/Common/TimeDelay.c</itemPath>

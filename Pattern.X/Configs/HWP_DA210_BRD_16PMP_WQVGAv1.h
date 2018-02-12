@@ -257,7 +257,8 @@
         #if defined (GFX_EPMP_CS2_BASE_ADDRESS)
             #define  USE_SST39LF400					  // use the 4 Mbit (x16) Multi-Purpose (Parallel) Flash connected to EPMP CS 2 
         #else	
-            #define	USE_SST25VF016                    // use the 16 Mbit SPI Serial Flash 
+            //#define	USE_SST25VF016                    // use the 16 Mbit SPI Serial Flash 
+            #define	USE_SST26VF016B                    // use the 16 Mbit SPI Serial Flash 
         #endif 
         #ifndef USE_TOUCHSCREEN_AR1020                // if AR1020 is selected use that resistive touch controller
             #define USE_TOUCHSCREEN_RESISTIVE         // use 4-wire resistive touch screen driver
@@ -1944,7 +1945,7 @@ typedef enum
 	*********************************************************************/
 
 	/* ----------------------------------------- */
-    #if defined (USE_SST25VF016) || defined (USE_M25P80)
+#if defined (USE_SST25VF016) || defined (USE_M25P80) || defined (USE_SST26VF016B)
 	/* ----------------------------------------- */
 		// Addresses for calibration and version values in SPI Flash on Graphics PICtail 3 & PIC24FJ256DA210 Development Board.
 		// Or Addresses for calibration and version values in Parallel Flash on PIC24FJ256DA210 Development Board.
@@ -1963,10 +1964,15 @@ typedef enum
         // define the functions to call for the non-volatile memory
         // check out touch screen module for definitions of the following function pointers
         // used: NVM_READ_FUNC, NVM_WRITE_FUNC & NVM_SECTORERASE_FUNC
+        #if defined (USE_SST25VF016)
 		#define NVMSectorErase					((NVM_SECTORERASE_FUNC)&SST25SectorErase)
     	#define NVMWrite 						((NVM_WRITE_FUNC)&SST25WriteWord)
     	#define NVMRead 						((NVM_READ_FUNC)&SST25ReadWord)
-
+        #else
+		#define NVMSectorErase					((NVM_SECTORERASE_FUNC)&NVM_SST26VF0XXB_SectorErase)
+    	#define NVMWrite 						((NVM_WRITE_FUNC)&NVM_SST26WriteWord)
+    	#define NVMRead 						((NVM_READ_FUNC)&NVM_SST26ReadWord)
+        #endif
 	/* ----------------------------------------- */
 	#elif defined (USE_SST39LF400)
 	/* ----------------------------------------- */
@@ -2230,7 +2236,7 @@ typedef enum
             #define MCHP25LC256_CS_LAT   LATDbits.LATD12
         #endif
 
-#if defined (USE_SST25VF016) 
+#if defined (USE_SST25VF016) || defined (USE_SST26VF016B) 
 
 	/*********************************************************************
 	* SPI Flash Memory on GFX_PICTIAL_V3, GFX_PICTAIL_V3e, 
@@ -2248,6 +2254,7 @@ typedef enum
             #define SST25_SPI_CHANNEL 1
         #else
             #define SST25_SPI_CHANNEL 2
+            #define SST26_SPI_CHANNEL 2
         #endif
     #elif defined (MEB_BOARD)
         // this is dependent on the Starter Kit used

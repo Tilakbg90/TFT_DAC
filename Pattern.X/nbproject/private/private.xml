@@ -1,13 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?><project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Pattern_F_V3_1.2%20new_T/Pattern.X/Main.c</file>
-            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Pattern_F_V3_1.2%20new_T/Pattern.X/DRV_SPI_SMCPU.h</file>
-            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Pattern_F_V3_1.2%20new_T/Pattern.X/Pattern/GDD_Screens.c</file>
-            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Pattern_F_V3_1.2%20new_T/Pattern.X/Main.h</file>
-            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Pattern_F_V3_1.2%20new_T/Pattern.X/DRV_SPI_SMCPU.c</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Board%20Support%20Package/drv_spi.c</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Board%20Support%20Package/SST25VF016.h</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Board%20Support%20Package/drv_spi.h</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Patter_F_V4_0/Pattern.X/Main.c</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Patter_F_V4_0/Pattern.X/SST26VF016B.h</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Microchip/Include/GenericTypeDefs.h</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Board%20Support%20Package/TouchScreen.h</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Board%20Support%20Package/SST25VF016.c</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Patter_F_V4_0/Pattern.X/SST26VF016B.c</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Patter_F_V4_0/Pattern.X/Configs/HWP_DA210_BRD_16PMP_WQVGAv1.h</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Board%20Support%20Package/TouchScreen.c</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Board%20Support%20Package/TouchScreenResistive.c</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Microchip/Graphics/Drivers/mchpGfxDrv.c</file>
+            <file>file:/E:/Microchip_solutions_v2013-06-15/Graphics/GLCD_Patter_F_V4_0/Pattern.X/HardwareProfile.h</file>
         </group>
     </open-files>
 </project-private>
